@@ -14,12 +14,14 @@ def display_messages():
         message(msg, is_user=is_user, key=str(i))
     st.session_state["thinking_spinner"] = st.empty()
 
+
 def process_input():
+    st.session_state["assistant"].change_temperature(st.session_state["temperature"])
     if st.session_state["user_input"] and len(st.session_state["user_input"].strip()) > 0:
         user_text = st.session_state["user_input"].strip()
         with st.session_state["thinking_spinner"], st.spinner(f"Думаю"):
             agent_text = st.session_state["assistant"].ask(user_text).strip()
-
+       
         st.session_state["messages"].append((user_text, True))
         st.session_state["messages"].append((agent_text, False))
         st.session_state["user_input"] = ""
@@ -61,6 +63,8 @@ def page():
 
     display_messages()
     st.text_input("Сообщение", key="user_input", on_change=process_input)
+    st.number_input("Температура", key="temperature", min_value=0.0, max_value=1.0, step = 0.01, value=0.01)
+
 
 if __name__ == "__main__":
     page()
